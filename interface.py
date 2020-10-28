@@ -7,6 +7,7 @@ from tkinter import filedialog
 root = Tk()
 root.title("PDF manipulator")
 
+
 filename = StringVar()
 pages = StringVar()
 start = StringVar()
