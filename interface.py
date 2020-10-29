@@ -9,7 +9,6 @@ import time
 import os
 
 
-
 root = Tk()
 root.title("PDF manipulator")
 
@@ -52,7 +51,6 @@ def findAmount(od, d="", c=1):
 def selector(ind):
     data[ind] = data[ind].split(" <")[0]
     data[current] += " <"
-    insert()
 
 insert()
 current = 0
@@ -109,7 +107,9 @@ def add_file(file = None):
 def remove_file():
     index = int(lb.curselection()[0])
     data.pop(index)
+    dataLocations.pop(index)
     lb.delete(ANCHOR)
+
 
 windnd.hook_dropfiles(root, add_file, force_unicode=True)
 
@@ -149,6 +149,15 @@ def pdf_merger():
     pdf_output = open(userfilename + '.pdf', 'wb')
     pdf_writer.write(pdf_output)
     pdf_output.close()
+
+    wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                        message='Jobs done! ' + userfilename  + 'is saved at ' + outFolder + '\n' 'do yout wish to continue')
+
+    lb.delete(0, END)
+    data.clear()
+    dataLocations.clear()
+
+
 
 x = threading.Thread(target=updatePages, args=(pages, filename))
 x.setDaemon(True)
