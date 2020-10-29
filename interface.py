@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import *
-from tkinter import messagebox, filedialog, simpledialog
+from tkinter import messagebox, filedialog, simpledialog, Label, Button, Listbox, Tk, StringVar
 import re, windnd
 import PyPDF2
 from PyPDF2 import PdfFileReader, PdfFileWriter
@@ -9,15 +8,18 @@ import time
 import os
 
 
+
 root = Tk()
 root.title("PDF manipulator")
+
+
 
 filename = StringVar()
 pages = StringVar()
 
 
 Label(root, text="PDF Manipulator", font=("Berlin Sans FB Demi", 16, "bold")).\
-                                    grid(row=0, column=0, columnspan=4, sticky=(E, N, S))
+                                    grid(row=0, column=0, columnspan=4, sticky=('E', 'N', 'S'))
 
 Button(root, text= "Add a File", command=lambda: add_file()).grid(row=2, column=0)
 Button(root, text= "Remove File", command=lambda: remove_file()).grid(row=4, column=0)
@@ -26,23 +28,23 @@ Button(root, text= "Quit", command=lambda: root.quit()).grid(row=6, column=2, ro
 Button(root, text= "splitter").grid(row=6, column=3, rowspan=2)
 
 Label(root, text="File: ").grid(row= 1, column= 3)
-Label(root, textvariable=filename, width=20).grid(row=1, column= 4, sticky= (N, S, E, W))
+Label(root, textvariable=filename, width=20).grid(row=1, column= 4, sticky= ('N', 'S', 'E', 'W'))
 
 Label(root, text= "Pages: ").grid(row=2, column= 3)
 Label(root, textvariable=pages).grid(row=2, column= 4)
 
-lb = Listbox(root, selectmode= EXTENDED)
-lb.grid(row=1, column=2, rowspan=5, sticky= (N, S, E, W))
+lb = Listbox(root, selectmode= "extended")
+lb.grid(row=1, column=2, rowspan=5, sticky= ('N', 'S', 'E', 'W'))
 
-lb.insert(END)
+lb.insert("end")
 dataLocations = []
 data = []
-lb.delete(0, END) 
+lb.delete(0, "end") 
 
 def insert():
     lb.delete(0, len(data))
     for ind, _ in enumerate(data):
-        lb.insert(END, data[ind])
+        lb.insert("end", data[ind])
 
 def findAmount(od, d="", c=1):
     d = od+" [{}]".format(str(c))
@@ -100,7 +102,7 @@ def add_file(file = None):
             data += [splitdata]
             dataLocations += [i]
         elif not hasErrored:
-            messagebox.showerror("You can only use pdf files", "Stop using the wrong files you dunce")
+            messagebox.showerror("You can only use pdf files", "Wrong file type! you can only use PDF files")
             hasErrored = True
     insert()
 
@@ -108,8 +110,7 @@ def remove_file():
     index = int(lb.curselection()[0])
     data.pop(index)
     dataLocations.pop(index)
-    lb.delete(ANCHOR)
-
+    lb.delete("anchor")
 
 windnd.hook_dropfiles(root, add_file, force_unicode=True)
 
@@ -117,45 +118,65 @@ for child in root.winfo_children():
     child.grid(padx=10, pady=10)
 
 def updatePages(pages: StringVar, filename: StringVar):
+
     while True:
         if data:
-            filename.set(data[current][:-2])
+            filename.set(data[current][:-1])
             pages.set(PdfFileReader(dataLocations[current]).getNumPages())
-
-
         time.sleep(0.1)
+
         
 def pdf_merger():
 
-    userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
-    outFolder = filedialog.askdirectory(title='Where do you want to save the file', initialdir='/')
+    if len(data) < 1:
+        button = False
+        messagebox.showerror('An error occured','No file where selected \n Please add the files you want to merge')
+    elif len(data) is 1:
+        button = False
+        messagebox.showerror('An error occured', 'Only one file selected \n Please add the files you want to merge')
+    else:
+        button = True
     
-    os.chdir(outFolder)
-    pdf2merge = []
+    while button is True:
+        userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
+        if len(userfilename) < 1:
+            messagebox.showerror('An error has oucurred','You forgot to name the file')
+            pdf_merger()
+            outFolder = filedialog.askdirectory(title='Where do you want to save the file', initialdir='/')  
+        try:
+            os.chdir(outFolder)
+        except FileNotFoundError: 
+            messagebox.showerror('An error has ocurred!', "The Choosen folder dosn't exsist")
+            continue
+        else:
+            break
 
-    for filename in dataLocations:
-        if filename.endswith('.pdf'):
-            pdf2merge.append(filename)
+        pdf2merge = []
 
-    pdf_writer = PdfFileWriter()
-    outDir = ''.join(outFolder)
+        for filename in dataLocations:
+            if filename.endswith('.pdf'):
+                pdf2merge.append(filename)
 
-    for filename in pdf2merge:
-        pdf_file_obj = open(filename, 'rb')
-        pdf_reader = PdfFileReader(pdf_file_obj)
-        for page_num in range(pdf_reader.numPages):
-            page_obj = pdf_reader.getPage(page_num)
-            pdf_writer.addPage(page_obj)
-    pdf_output = open(userfilename + '.pdf', 'wb')
-    pdf_writer.write(pdf_output)
-    pdf_output.close()
+        pdf_writer = PdfFileWriter()
+        outDir = ''.join(outFolder)
 
-    wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
-                                        message='Jobs done! ' + userfilename  + 'is saved at ' + outFolder + '\n' 'do yout wish to continue')
+        for filename in pdf2merge:
+            pdf_file_obj = open(filename, 'rb')
+            pdf_reader = PdfFileReader(pdf_file_obj)
+            for page_num in range(pdf_reader.numPages):
+                page_obj = pdf_reader.getPage(page_num)
+                pdf_writer.addPage(page_obj)
+        pdf_output = open(userfilename + '.pdf', 'wb')
+        pdf_writer.write(pdf_output)
+        pdf_output.close()
 
-    lb.delete(0, END)
-    data.clear()
-    dataLocations.clear()
+        wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                            message='Jobs done! \n ' + userfilename  + 'is saved at ' + outFolder +
+                                            '\n' '         Do yout wish to continue    ')
+
+        lb.delete(0, "end")
+        data.clear()
+        dataLocations.clear()
 
 
 
