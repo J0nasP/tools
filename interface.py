@@ -11,30 +11,34 @@ import os
 
 root = Tk()
 root.title("PDF manipulator")
-
+root.geometry('650x400')
 
 
 filename = StringVar()
 pages = StringVar()
 
 
+
 Label(root, text="PDF Manipulator", font=("Berlin Sans FB Demi", 16, "bold")).\
-                                    grid(row=0, column=0, columnspan=4, sticky=('E', 'N', 'S'))
+                                    grid(row=0, column=0, columnspan=7, sticky=('N'))
 
 Button(root, text= "Add a File", command=lambda: add_file()).grid(row=2, column=0)
-Button(root, text= "Remove File", command=lambda: remove_file()).grid(row=4, column=0)
-Button(root, text= "Merger", command=lambda:pdf_merger()).grid(row=6, column=1, rowspan=2)
-Button(root, text= "Quit", command=lambda: root.quit()).grid(row=6, column=2, rowspan=2)
-Button(root, text= "splitter").grid(row=6, column=3, rowspan=2)
+Button(root, text= "Remove File", command=lambda: remove_file()).grid(row=3, column=0)
+Button(root, text= "Merge PDF Files", command=lambda:pdf_merger()).grid(row=8, column=0)
+Button(root, text= "Quit", command=lambda: want_to_quit()).grid(row=8, column=2)
+Button(root, text= "Split PDF Files").grid(row=8, column=1)
 
-Label(root, text="File: ").grid(row= 1, column= 3)
-Label(root, textvariable=filename, width=20).grid(row=1, column= 4, sticky= ('N', 'S', 'E', 'W'))
 
-Label(root, text= "Pages: ").grid(row=2, column= 3)
-Label(root, textvariable=pages).grid(row=2, column= 4)
+Label(root, text="File: ").grid(row= 2, column= 3)
+Label(root, textvariable=filename, width=25).grid(row=2, column= 4, columnspan=2)
 
-lb = Listbox(root, selectmode= "extended")
-lb.grid(row=1, column=2, rowspan=5, sticky= ('N', 'S', 'E', 'W'))
+Label(root, text= "Pages: ").grid(row=3, column= 3)
+Label(root, textvariable=pages).grid(row=3, column= 4)
+
+lb = Listbox(root, selectmode= "extended", height=15, width=35)
+lb.grid(row=1, column=2, rowspan=7, sticky= ('N', 'S', 'E', 'W'))
+
+
 
 lb.insert("end")
 dataLocations = []
@@ -90,12 +94,12 @@ lb.bind('<Button-1>', select)
 def add_file(file = None):
     global data
     global dataLocations
-    if not file: d = [filedialog.askopenfilename(filetypes=(('PDF File','*.pdf'),('Word files','.docx')))]
+    if not file: d = [filedialog.askopenfilename(filetypes=(('PDF','*.pdf'),('Word files','.docx')))]
     else: d = file
     hasErrored = False
     for i in d:
         splitdata = i.split("/")[-1].split("\\")[-1]
-        if splitdata.endswith(".pdf"):
+        if splitdata.endswith(".pdf" or "PDF"):
             print(i)
             if i in data:
                 i = findAmount(d)
@@ -121,7 +125,7 @@ def updatePages(pages: StringVar, filename: StringVar):
 
     while True:
         if data:
-            filename.set(data[current][:-1])
+            filename.set(data[current][:-2])
             pages.set(PdfFileReader(dataLocations[current]).getNumPages())
         time.sleep(0.1)
 
@@ -158,7 +162,6 @@ def pdf_merger():
                 pdf2merge.append(filename)
 
         pdf_writer = PdfFileWriter()
-        outDir = ''.join(outFolder)
 
         for filename in pdf2merge:
             pdf_file_obj = open(filename, 'rb')
@@ -178,10 +181,26 @@ def pdf_merger():
         data.clear()
         dataLocations.clear()
 
+class NoInputError(Exception): pass
+
+def want_to_quit():
+    want_quit = messagebox.askyesno(title='Are you sure?', message='Are you sure you want to quit??')
+    if want_quit is True:
+        root.quit()
+    else:
+        pass
+
+
+
 
 
 x = threading.Thread(target=updatePages, args=(pages, filename))
 x.setDaemon(True)
 x.start()
 
+
+root.resizable(width=False, height=False)
+
 root.mainloop()
+
+
