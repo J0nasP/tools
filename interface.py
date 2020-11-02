@@ -146,8 +146,9 @@ def pdf_merger():
         if len(userfilename) < 1:
             messagebox.showerror('An error has oucurred','You forgot to name the file')
             pdf_merger()
-            outFolder = filedialog.askdirectory(title='Where do you want to save the file', initialdir='/')  
+         
         try:
+            outFolder = filedialog.askdirectory(title='Where do you want to save the file', initialdir='/')  
             os.chdir(outFolder)
         except FileNotFoundError: 
             messagebox.showerror('An error has ocurred!', "The Choosen folder dosn't exsist")
@@ -177,11 +178,12 @@ def pdf_merger():
                                             message='Jobs done! \n ' + userfilename  + 'is saved at ' + outFolder +
                                             '\n' '         Do yout wish to continue    ')
 
+
         lb.delete(0, "end")
         data.clear()
         dataLocations.clear()
 
-class NoInputError(Exception): pass
+
 
 def want_to_quit():
     want_quit = messagebox.askyesno(title='Are you sure?', message='Are you sure you want to quit??')
@@ -190,8 +192,33 @@ def want_to_quit():
     else:
         pass
 
+def pdf_splitter():
 
+    
+    if len(data) < 0:
+        button = False
+        messagebox.showerror('An error occured','No file where selected \n Please add the files you want to merge')
+    else:
+        button = True
+    
+    while button is True:
+        userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
+        if len(userfilename) < 1:
+            messagebox.showerror('An error has oucurred','You forgot to name the file')
+            pdf_merger()
+            outFolder = filedialog.askdirectory(title='Where do you want to save the file', initialdir='/')  
+        
+        try:
+            outFolder = filedialog.askdirectory(title='Where do you want to save the file', initialdir='/')  
+            os.chdir(outFolder)
+        except FileNotFoundError: 
+            messagebox.showerror('An error has ocurred!', "The Choosen folder dosn't exsist")
+            continue
+        else:
+            break
+    
 
+    
 
 
 x = threading.Thread(target=updatePages, args=(pages, filename))
