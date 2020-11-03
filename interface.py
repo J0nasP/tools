@@ -5,7 +5,7 @@ import PyPDF2
 from PyPDF2 import PdfFileReader, PdfFileWriter
 import threading
 import time
-import os
+import os, re
 
 
 
@@ -26,7 +26,7 @@ Button(root, text= "Add a File", command=lambda: add_file()).grid(row=2, column=
 Button(root, text= "Remove File", command=lambda: remove_file()).grid(row=3, column=0)
 Button(root, text= "Merge PDF Files", command=lambda:pdf_merger()).grid(row=8, column=0)
 Button(root, text= "Quit", command=lambda: want_to_quit()).grid(row=8, column=2)
-Button(root, text= "Split PDF Files").grid(row=8, column=1)
+Button(root, text= "Split PDF Files", command=lambda: pdf_splitter()).grid(row=8, column=1)
 
 
 Label(root, text="File: ").grid(row= 2, column= 3)
@@ -125,7 +125,7 @@ def updatePages(pages: StringVar, filename: StringVar):
 
     while True:
         if data:
-            filename.set(data[current][:-2])
+            filename.set(data[current][:-1])
             pages.set(PdfFileReader(dataLocations[current]).getNumPages())
         time.sleep(0.1)
 
@@ -176,14 +176,17 @@ def pdf_merger():
 
         wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
                                             message='Jobs done! \n ' + userfilename  + 'is saved at ' + outFolder +
-                                            '\n' '         Do yout wish to continue    ')
+                                            '\n' '             Do yout wish to quit?   ')
+
+        if wish_quit_mes == True or wish_quit_mes == None:
+            root.quit()
+        else: 
+            pass
 
 
         lb.delete(0, "end")
         data.clear()
         dataLocations.clear()
-
-
 
 def want_to_quit():
     want_quit = messagebox.askyesno(title='Are you sure?', message='Are you sure you want to quit??')
@@ -194,29 +197,108 @@ def want_to_quit():
 
 def pdf_splitter():
 
-    
-    if len(data) < 0:
+    if len(data)  is 0:
         button = False
-        messagebox.showerror('An error occured','No file where selected \n Please add the files you want to merge')
+        messagebox.showerror('An error occured',' No file where selected \n Please add the files you want to split')
     else:
         button = True
+    
+    if len(data) > 1:
+        button = False
+        messagebox.showerror('An error occured!', 'Sorry you can only split one fileat the time \n        We are working on it!:)')
     
     while button is True:
         userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
         if len(userfilename) < 1:
             messagebox.showerror('An error has oucurred','You forgot to name the file')
-            pdf_merger()
-            outFolder = filedialog.askdirectory(title='Where do you want to save the file', initialdir='/')  
+            pdf_splitter()
+        
         
         try:
-            outFolder = filedialog.askdirectory(title='Where do you want to save the file', initialdir='/')  
-            os.chdir(outFolder)
+            outFolder = filedialog.askdirectory(title='Where do you want to save the file?', initialdir='/')  
         except FileNotFoundError: 
             messagebox.showerror('An error has ocurred!', "The Choosen folder dosn't exsist")
             continue
+
+        
+        pdf2split = []
+
+        for filename in dataLocations:
+            if filename.endswith('.pdf'):
+                pdf2split.append(filename)
+        
+        pageCounter=0
+
+        print(pdf2split)
+
+        for Files in pdf2split:
+            pages = PdfFileReader(filename).getNumPages()
+            pageCount = pages + pageCounter
+
+        print(pageCount)
+        numInput = False
+
+        while numInput == False:
+            page_range = simpledialog.askstring('which pages do you want?',
+                                                'which pages do you want? ex. 1-3 or 1,5,7 ({} total pages)'.format(pageCount))
+            
+            inp = page_range
+            inps = (re.findall("[0-9]-[0-9]|[0-9]", inp))
+            output = [list(range(int(i[0]), int(i[1]) + 1)) for i in [i.split("-") if "-" in i else [i, i] for i in inps]]
+            rangeList = [x for i in output for x in i]
+            page_ranges = (x.split("-") for x in page_range.split(","))
+            range_list = [i for r in page_ranges for i in range(int(r[0]), int(r[-1]) + 1)]
+
+            print(range_list)
+            if max(range_list) >  pageCount:
+                messagebox.showerror('An error occured!', 'The page number is to high!')
+                numInput = False
+
+            if pageCount < 2:
+                messagebox.showerror('An error ocurred!', "There isn't enough pages to split")
+                numInput = False
+            
+            if max(range_list) < pageCount:
+                numInput = True
+
+
+
+        
+        print(pageCount)
+             
+
+        
+
+        outFolder = ''.join(outFolder)
+        print(outFolder)
+        for filename in pdf2split:
+            inputPdf = PdfFileReader(filename)
+            try:
+                for page in range_list:
+                    outputWriter = PdfFileWriter()
+                    outputWriter.addPage(inputPdf.getPage(page-1))
+                    outFile = os.path.join(outFolder, '{} page {}.pdf'.format(userfilename, page))
+                    with open(outFile, 'wb') as out:
+                        outputWriter.write(out)
+            except IndexError:
+                messagebox.showerror('An error has occured', 'Range has exceeded number of pages in the input. \nFile will still be saved')
+                    
+        fileCount = str(len(range_list))
+        wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                            message='Jobs done! \n ' +  fileCount + ' files are saved at ' + outFolder +
+                                            '\n' '            Do you wish to quit?    ')
+
+        if wish_quit_mes == True or wish_quit_mes == None:
+            root.quit()
         else:
-            break
-    
+            pass
+
+        lb.delete(0, "end")
+        data.clear()
+        dataLocations.clear()
+        button = False
+    return
+
 
     
 
