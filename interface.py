@@ -26,7 +26,7 @@ Button(root, text= "Add a File", command=lambda: add_file()).grid(row=2, column=
 Button(root, text= "Remove File", command=lambda: remove_file()).grid(row=3, column=0)
 Button(root, text= "Merge PDF Files", command=lambda:pdf_merger()).grid(row=8, column=0)
 Button(root, text= "Quit", command=lambda: want_to_quit()).grid(row=8, column=2)
-Button(root, text= "Split PDF Files", command=lambda: pdf_splitter()).grid(row=8, column=1)
+Button(root, text= "Split PDF Files", command=lambda: pdf_selector()).grid(row=8, column=1)
 
 
 Label(root, text="File: ").grid(row= 2, column= 3)
@@ -195,7 +195,7 @@ def want_to_quit():
     else:
         pass
 
-def pdf_splitter():
+def pdf_selector():
 
     if len(data)  is 0:
         button = False
@@ -205,101 +205,187 @@ def pdf_splitter():
     
     if len(data) > 1:
         button = False
-        messagebox.showerror('An error occured!', 'Sorry you can only split one fileat the time \n        We are working on it!:)')
-    
-    while button is True:
-        userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
-        if len(userfilename) < 1:
-            messagebox.showerror('An error has oucurred','You forgot to name the file')
-            pdf_splitter()
+        messagebox.showerror('An error occured!', 'Sorry you can only split one file at the time \n       We are working on it!:)')
+    if len(data) is 1:
+        choise = simpledialog.askstring(title="Do you want one or many files?", 
+        prompt="Do you want to save the splitted file in one file or one file for each page? \n" 
+                                                "                                     Enter either ONE or MANY")
+
+        if choise == "ONE".upper():
+            pdf_splitter_one()
+        elif choise == "MANY".upper():
+            pdf_splitter_many()
+
+
+def pdf_splitter_many():
+
+    userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
+    if len(userfilename) < 1:
+        messagebox.showerror('An error has oucurred','You forgot to name the file')
+        pdf_splitter_many()
+      
+    try:
+        outFolder = filedialog.askdirectory(title='Where do you want to save the file?', initialdir='/')  
+    except FileNotFoundError: 
+        messagebox.showerror('An error has ocurred!', "The Choosen folder dosn't exsist")
+               
+    pdf2split = []
+
+    for filename in dataLocations:
+        if filename.endswith('.pdf'):
+            pdf2split.append(filename)
         
+    pageCounter=0
+
+    for Files in pdf2split:
+        pages = PdfFileReader(filename).getNumPages()
+        pageCount = pages + pageCounter
+
+    numInput = False
+
+    while numInput == False:
+        page_range = simpledialog.askstring('which pages do you want?',
+                                            'which pages do you want? ex. 1-3 or 1,5,7 ({} total pages)'.format(pageCount))
+            
+        inp = page_range
+        inps = (re.findall("[0-9]-[0-9]|[0-9]", inp))
+        output = [list(range(int(i[0]), int(i[1]) + 1)) for i in [i.split("-") if "-" in i else [i, i] for i in inps]]
+        rangeList = [x for i in output for x in i]
+        page_ranges = (x.split("-") for x in page_range.split(","))
+        range_list = [i for r in page_ranges for i in range(int(r[0]), int(r[-1]) + 1)]
+
+        print(range_list)
+        if max(range_list) >  pageCount:
+            messagebox.showerror('An error occured!', 'The page number is to high!')
+            numInput = False
+
+        if pageCount < 2:
+            messagebox.showerror('An error ocurred!', "There isn't enough pages to split")
+            numInput = False
+            
+        if max(range_list) < pageCount:
+            numInput = True
+
+
         
+    outFolder = ''.join(outFolder)
+
+    for filename in pdf2split:
+        inputPdf = PdfFileReader(filename)
         try:
-            outFolder = filedialog.askdirectory(title='Where do you want to save the file?', initialdir='/')  
-        except FileNotFoundError: 
-            messagebox.showerror('An error has ocurred!', "The Choosen folder dosn't exsist")
-            continue
-
-        
-        pdf2split = []
-
-        for filename in dataLocations:
-            if filename.endswith('.pdf'):
-                pdf2split.append(filename)
-        
-        pageCounter=0
-
-        print(pdf2split)
-
-        for Files in pdf2split:
-            pages = PdfFileReader(filename).getNumPages()
-            pageCount = pages + pageCounter
-
-        print(pageCount)
-        numInput = False
-
-        while numInput == False:
-            page_range = simpledialog.askstring('which pages do you want?',
-                                                'which pages do you want? ex. 1-3 or 1,5,7 ({} total pages)'.format(pageCount))
-            
-            inp = page_range
-            inps = (re.findall("[0-9]-[0-9]|[0-9]", inp))
-            output = [list(range(int(i[0]), int(i[1]) + 1)) for i in [i.split("-") if "-" in i else [i, i] for i in inps]]
-            rangeList = [x for i in output for x in i]
-            page_ranges = (x.split("-") for x in page_range.split(","))
-            range_list = [i for r in page_ranges for i in range(int(r[0]), int(r[-1]) + 1)]
-
-            print(range_list)
-            if max(range_list) >  pageCount:
-                messagebox.showerror('An error occured!', 'The page number is to high!')
-                numInput = False
-
-            if pageCount < 2:
-                messagebox.showerror('An error ocurred!', "There isn't enough pages to split")
-                numInput = False
-            
-            if max(range_list) < pageCount:
-                numInput = True
-
-
-
-        
-        print(pageCount)
-             
-
-        
-
-        outFolder = ''.join(outFolder)
-        print(outFolder)
-        for filename in pdf2split:
-            inputPdf = PdfFileReader(filename)
-            try:
-                for page in range_list:
-                    outputWriter = PdfFileWriter()
-                    outputWriter.addPage(inputPdf.getPage(page-1))
-                    outFile = os.path.join(outFolder, '{} page {}.pdf'.format(userfilename, page))
-                    with open(outFile, 'wb') as out:
-                        outputWriter.write(out)
-            except IndexError:
-                messagebox.showerror('An error has occured', 'Range has exceeded number of pages in the input. \nFile will still be saved')
+            for page in range_list:
+                outputWriter = PdfFileWriter()
+                outputWriter.addPage(inputPdf.getPage(page-1))
+                outFile = os.path.join(outFolder, '{} page {}.pdf'.format(userfilename, page))
+                with open(outFile, 'wb') as out:
+                    outputWriter.write(out)
+        except IndexError:
+            messagebox.showerror('An error has occured', 'Range has exceeded number of pages in the input. \nFile will still be saved')
                     
-        fileCount = str(len(range_list))
-        wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+    fileCount = str(len(range_list))
+    wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
                                             message='Jobs done! \n ' +  fileCount + ' files are saved at ' + outFolder +
                                             '\n' '            Do you wish to quit?    ')
 
-        if wish_quit_mes == True or wish_quit_mes == None:
-            root.quit()
-        else:
-            pass
+    if wish_quit_mes == True or wish_quit_mes == None:
+        root.quit()
+    else:
+        pass
 
-        lb.delete(0, "end")
-        data.clear()
-        dataLocations.clear()
-        button = False
+    lb.delete(0, "end")
+    data.clear()
+    dataLocations.clear()
+    button = False
     return
 
+def pdf_splitter_one():
 
+    userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
+    if len(userfilename) < 1:
+        messagebox.showerror('An error has oucurred','You forgot to name the file')
+        pdf_splitter_many()
+      
+    try:
+        outFolder = filedialog.askdirectory(title='Where do you want to save the file?', initialdir='/')  
+    except FileNotFoundError: 
+        messagebox.showerror('An error has ocurred!', "The Choosen folder dosn't exsist")
+               
+    pdf2split = []
+
+    for filename in dataLocations:
+        if filename.endswith('.pdf'):
+            pdf2split.append(filename)
+        
+    pageCounter=0
+
+    for Files in pdf2split:
+        pages = PdfFileReader(filename).getNumPages()
+        pageCount = pages + pageCounter
+
+    numInput = False
+
+    while numInput == False:
+        page_range = simpledialog.askstring('which pages do you want?',
+                                            'which pages do you want? ex. 1-3 or 1,5,7 ({} total pages)'.format(pageCount))
+            
+        inp = page_range
+        inps = (re.findall("[0-9]-[0-9]|[0-9]", inp))
+        output = [list(range(int(i[0]), int(i[1]) + 1)) for i in [i.split("-") if "-" in i else [i, i] for i in inps]]
+        rangeList = [x for i in output for x in i]
+        page_ranges = (x.split("-") for x in page_range.split(","))
+        range_list = [i for r in page_ranges for i in range(int(r[0]), int(r[-1]) + 1)]
+
+        print(range_list)
+        if max(range_list) >  pageCount:
+            messagebox.showerror('An error occured!', 'The page number is to high!')
+            numInput = False
+
+        if pageCount < 2:
+            messagebox.showerror('An error ocurred!', "There isn't enough pages to split")
+            numInput = False
+            
+        if max(range_list) < pageCount:
+            numInput = True
+
+        os.chdir(outFolder)
+
+        output_writer = PdfFileWriter()
+        input_pdf = PdfFileReader(open(filename, 'rb'))
+        output_file = open(userfilename + '.pdf', "wb")
+        inp = page_range
+        inps = (re.findall("[0-9]-[0-9]|[0-9]", inp))
+        output = [i for x in [list(range(int(i[0]), int(i[1]) + 1)) for i in [i.split("-") if "-" in i else [i, i] for i in inps]] for i in x]
+
+
+        for p in output:
+
+            try:
+
+                output_writer.addPage(input_pdf.getPage(p - 1))
+            except IndexError:
+                # Alert the user and stop adding pages
+                messagebox.showerror(title="Info",
+                                        message="Range exceeded number of pages in input.\nFile will still be saved.")
+
+        output_writer.write(output_file)
+        output_file.close()
+        numInput= True  
+
+    #fileCount = str(len(range_list))
+    wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                            message='Jobs done! \n ' +  userfilename + ' files are saved at ' + outFolder +
+                                            '\n' '            Do you wish to quit?    ')
+
+    if wish_quit_mes == True or wish_quit_mes == None:
+        root.quit()
+    else:
+        pass
+
+    lb.delete(0, "end")
+    data.clear()
+    dataLocations.clear()
+    button = False
+    return
     
 
 
