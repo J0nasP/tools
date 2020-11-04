@@ -29,8 +29,9 @@ Button(root, text= "Quit", command=lambda: want_to_quit()).grid(row=8, column=2)
 Button(root, text= "Split PDF Files", command=lambda: pdf_selector()).grid(row=8, column=1)
 
 
+
 Label(root, text="File: ").grid(row= 2, column= 3)
-Label(root, textvariable=filename, width=25).grid(row=2, column= 4, columnspan=2)
+Label(root, textvariable=filename, width=25).grid(row=2, column= 4, columnspan=1)
 
 Label(root, text= "Pages: ").grid(row=3, column= 3)
 Label(root, textvariable=pages).grid(row=3, column= 4)
@@ -211,10 +212,12 @@ def pdf_selector():
         prompt="Do you want to save the splitted file in one file or one file for each page? \n" 
                                                 "                                     Enter either ONE or MANY")
 
-        if choise == "ONE".upper():
+        if choise.lower() == "ONE".lower():
             pdf_splitter_one()
-        elif choise == "MANY".upper():
+        elif choise.lower() == "MANY".lower():
             pdf_splitter_many()
+        else:
+            messagebox.showerror('An error occured!', 'Sorry wrong input! Please type MANY or ONE in the text field!')
 
 
 def pdf_splitter_many():
@@ -263,7 +266,7 @@ def pdf_splitter_many():
             messagebox.showerror('An error ocurred!', "There isn't enough pages to split")
             numInput = False
             
-        if max(range_list) < pageCount:
+        if max(range_list) <= pageCount:
             numInput = True
 
 
@@ -275,7 +278,7 @@ def pdf_splitter_many():
         try:
             for page in range_list:
                 outputWriter = PdfFileWriter()
-                outputWriter.addPage(inputPdf.getPage(page-1))
+                outputWriter.addPage(inputPdf.getPage(page - 1))
                 outFile = os.path.join(outFolder, '{} page {}.pdf'.format(userfilename, page))
                 with open(outFile, 'wb') as out:
                     outputWriter.write(out)
