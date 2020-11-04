@@ -4,8 +4,12 @@ import re, windnd
 import PyPDF2
 from PyPDF2 import PdfFileReader, PdfFileWriter
 import threading
-import time
+import time, glob
 import os, re
+from docx import Document
+import win32com.client as client
+from pdf2docx import parse
+from docx2pdf import convert
 
 
 
@@ -27,7 +31,7 @@ Button(root, text= "Remove File", command=lambda: remove_file()).grid(row=3, col
 Button(root, text= "Merge PDF Files", command=lambda:pdf_merger()).grid(row=8, column=0)
 Button(root, text= "Quit", command=lambda: want_to_quit()).grid(row=8, column=2)
 Button(root, text= "Split PDF Files", command=lambda: pdf_selector()).grid(row=8, column=1)
-
+Button(root, text= "PDF to Word", command=lambda: pdf_to_word()).grid(row=7, column=0)
 
 
 Label(root, text="File: ").grid(row= 2, column= 3)
@@ -132,17 +136,17 @@ def updatePages(pages: StringVar, filename: StringVar):
 
         
 def pdf_merger():
-
+    """Merges PDF files and saves them as one file """
     if len(data) < 1:
         button = False
         messagebox.showerror('An error occured','No file where selected \n Please add the files you want to merge')
-    elif len(data) is 1:
+    elif len(data) == 1:
         button = False
         messagebox.showerror('An error occured', 'Only one file selected \n Please add the files you want to merge')
     else:
         button = True
     
-    while button is True:
+    while button == True:
         userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
         if len(userfilename) < 1:
             messagebox.showerror('An error has oucurred','You forgot to name the file')
@@ -190,15 +194,16 @@ def pdf_merger():
         dataLocations.clear()
 
 def want_to_quit():
+    """ Quit button function that makes sure if they want to close the app or continue """
     want_quit = messagebox.askyesno(title='Are you sure?', message='Are you sure you want to quit??')
-    if want_quit is True:
+    if want_quit == True:
         root.quit()
     else:
         pass
 
 def pdf_selector():
-
-    if len(data)  is 0:
+    """Function where the user selects if they want one pdf file or many pdf files  """
+    if len(data)  == 0:
         button = False
         messagebox.showerror('An error occured',' No file where selected \n Please add the files you want to split')
     else:
@@ -207,7 +212,7 @@ def pdf_selector():
     if len(data) > 1:
         button = False
         messagebox.showerror('An error occured!', 'Sorry you can only split one file at the time \n       We are working on it!:)')
-    if len(data) is 1:
+    if len(data) == 1:
         choise = simpledialog.askstring(title="Do you want one or many files?", 
         prompt="Do you want to save the splitted file in one file or one file for each page? \n" 
                                                 "                                     Enter either ONE or MANY")
@@ -221,6 +226,7 @@ def pdf_selector():
 
 
 def pdf_splitter_many():
+    """Split a Pdf file and saves it as each page as a file"""
 
     userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
     if len(userfilename) < 1:
@@ -302,7 +308,7 @@ def pdf_splitter_many():
     return
 
 def pdf_splitter_one():
-
+    """Split a Pdf file and saves it as one file containing the selected files"""
     userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
     if len(userfilename) < 1:
         messagebox.showerror('An error has oucurred','You forgot to name the file')
@@ -390,7 +396,70 @@ def pdf_splitter_one():
     button = False
     return
     
+def pdf_to_word():
+    if len(data) < 1:
+        button = False
+        messagebox.showerror('An error occured','No file where selected \n  Please add the files you want to convert')    
+    else:
+        button = True
 
+        while button == True:
+            word = client.gencache.EnsureDispatch("Word.Application")
+
+
+            pdfs_path = data
+            reqs_path = filedialog.askdirectory(title='Where do you want to save the files?',
+                                    initialdir='\\')
+
+
+
+            pdf2convert = []
+
+            for filename in dataLocations:
+                if filename.endswith('.pdf'):
+                    pdf2convert.append(filename)
+            print(pdf2convert)
+
+            pdfs_path += '\\'
+            reqs_path += '\\'
+
+                
+            for doc in pdf2convert:
+
+                filename = doc.split('\\')[-1]
+                in_file = os.path.abspath(filename)
+                wb = word.Documents.Open(in_file)
+                out_file = os.path.abspath(reqs_path +filename[0:-4] + ".docx".format(doc))
+                wb.SaveAs2(out_file, FileFormat=16) # file format for docx
+                wb.Close()
+                        
+            word.Quit()
+            button = False
+
+def word_to_pdf():
+    if len(data) < 1:
+        button = False
+        messagebox.showerror('An error occured','No file where selected \n  Please add the files you want to convert')    
+    else:
+        button = True
+
+        while button == True:
+
+
+            input_folder = dataLocations
+
+            pdfs_path = dataLocations
+            reqs_path = filedialog.askdirectory(title='Where do you want to save the files?',
+                                    initialdir='/')
+
+            word2pdf = []
+
+            for files in dataLocations:
+                if files.endswith('docx'):
+                    word2pdf.append(files)
+            
+            for filenames in word2pdf:
+                convert(filenames,reqs_path)
 
 x = threading.Thread(target=updatePages, args=(pages, filename))
 x.setDaemon(True)
