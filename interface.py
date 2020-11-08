@@ -419,8 +419,9 @@ def pdf_to_word():
 
             pdfs_path += '\\'
             reqs_path += '\\'
-            please = reqs_path.replace('/','\\', -1)
-            print(please)
+
+
+
 
             for doc in pdf2convert:
 
@@ -434,8 +435,9 @@ def pdf_to_word():
                         
             word.Quit()
             button = False
+            listsize = len(pdf2convert)
         wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
-                                            message='Jobs done! \n ' +  userfilename + ' files are saved at ' + outFolder +
+                                            message='Jobs done! \n ' +  str(listsize) + ' files are saved at ' + reqs_path +
                                             '\n' '            Do you wish to quit?    ')
 
     if wish_quit_mes == True or wish_quit_mes == None:
@@ -448,7 +450,7 @@ def pdf_to_word():
     dataLocations.clear()
     button = False
     return
-    
+
 def word_to_pdf():
     if len(data) < 1:
         button = False
