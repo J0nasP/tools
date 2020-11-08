@@ -380,7 +380,6 @@ def pdf_splitter_one():
         output_file.close()
         numInput= True  
 
-    #fileCount = str(len(range_list))
     wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
                                             message='Jobs done! \n ' +  userfilename + ' files are saved at ' + outFolder +
                                             '\n' '            Do you wish to quit?    ')
@@ -407,35 +406,49 @@ def pdf_to_word():
             word = client.gencache.EnsureDispatch("Word.Application")
 
 
-            pdfs_path = data
+            pdfs_path = dataLocations
             reqs_path = filedialog.askdirectory(title='Where do you want to save the files?',
                                     initialdir='\\')
-
-
 
             pdf2convert = []
 
             for filename in dataLocations:
                 if filename.endswith('.pdf'):
                     pdf2convert.append(filename)
-            print(pdf2convert)
+            
 
             pdfs_path += '\\'
             reqs_path += '\\'
+            please = reqs_path.replace('/','\\', -1)
+            print(please)
 
-                
             for doc in pdf2convert:
 
                 filename = doc.split('\\')[-1]
-                in_file = os.path.abspath(filename)
-                wb = word.Documents.Open(in_file)
-                out_file = os.path.abspath(reqs_path +filename[0:-4] + ".docx".format(doc))
-                wb.SaveAs2(out_file, FileFormat=16) # file format for docx
+                wb = word.Documents.Open(filename)
+                out_file = os.path.abspath(filename[0:-4] + ".docx".format(doc))
+                outfile = out_file.replace('/','\\')
+                print(outfile)
+                wb.SaveAs(outfile, FileFormat=16) # file format for docx
                 wb.Close()
                         
             word.Quit()
             button = False
+        wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                            message='Jobs done! \n ' +  userfilename + ' files are saved at ' + outFolder +
+                                            '\n' '            Do you wish to quit?    ')
 
+    if wish_quit_mes == True or wish_quit_mes == None:
+        root.quit()
+    else:
+        pass
+
+    lb.delete(0, "end")
+    data.clear()
+    dataLocations.clear()
+    button = False
+    return
+    
 def word_to_pdf():
     if len(data) < 1:
         button = False
@@ -451,7 +464,7 @@ def word_to_pdf():
             pdfs_path = dataLocations
             reqs_path = filedialog.askdirectory(title='Where do you want to save the files?',
                                     initialdir='/')
-
+            
             word2pdf = []
 
             for files in dataLocations:
