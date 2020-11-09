@@ -32,6 +32,7 @@ Button(root, text= "Merge PDF Files", command=lambda:pdf_merger()).grid(row=8, c
 Button(root, text= "Quit", command=lambda: want_to_quit()).grid(row=8, column=2)
 Button(root, text= "Split PDF Files", command=lambda: pdf_selector()).grid(row=8, column=1)
 Button(root, text= "PDF to Word", command=lambda: pdf_to_word()).grid(row=7, column=0)
+Button(root, text= "Word to PDF", command=lambda:word_to_pdf()).grid(row=7, column=1)
 
 
 Label(root, text="File: ").grid(row= 2, column= 3)
@@ -104,14 +105,14 @@ def add_file(file = None):
     hasErrored = False
     for i in d:
         splitdata = i.split("/")[-1].split("\\")[-1]
-        if splitdata.endswith(".pdf" or "PDF"):
+        if splitdata.endswith(".pdf" or "PDF") or splitdata.endswith(".docx" or "DOCX"):
             print(i)
             if i in data:
                 i = findAmount(d)
             data += [splitdata]
             dataLocations += [i]
         elif not hasErrored:
-            messagebox.showerror("You can only use pdf files", "Wrong file type! you can only use PDF files")
+            messagebox.showerror("You can only use pdf docx files", "Wrong file type! you can only use PDF or docx files")
             hasErrored = True
     insert()
 
@@ -131,7 +132,8 @@ def updatePages(pages: StringVar, filename: StringVar):
     while True:
         if data:
             filename.set(data[current][:-1])
-            pages.set(PdfFileReader(dataLocations[current]).getNumPages())
+            if filename.get().endswith('.pdf'):
+                pages.set(PdfFileReader(dataLocations[current]).getNumPages())
         time.sleep(0.1)
 
         
@@ -417,14 +419,8 @@ def pdf_to_word():
                     pdf2convert.append(filename)
             
 
-            pdfs_path += '\\'
-            reqs_path += '\\'
-
-
-
 
             for doc in pdf2convert:
-
                 filename = doc.split('\\')[-1]
                 wb = word.Documents.Open(filename)
                 out_file = os.path.abspath(filename[0:-4] + ".docx".format(doc))
@@ -475,6 +471,28 @@ def word_to_pdf():
             
             for filenames in word2pdf:
                 convert(filenames,reqs_path)
+            
+            button = False
+            listsize = len(word2pdf)
+            if listsize == 1:
+                wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                                message='Jobs done! \n ' +  str(listsize) + ' file is saved at ' + reqs_path +
+                                                '\n' '            Do you wish to quit?    ')
+            elif listsize > 1:
+                wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                                    message='Jobs done! \n ' +  str(listsize) + ' files are saved at ' + reqs_path +
+                                                    '\n' '            Do you wish to quit?    ')
+
+    if wish_quit_mes == True or wish_quit_mes == None:
+        root.quit()
+    else:
+        pass
+
+    lb.delete(0, "end")
+    data.clear()
+    dataLocations.clear()
+    button = False
+    return
 
 x = threading.Thread(target=updatePages, args=(pages, filename))
 x.setDaemon(True)
