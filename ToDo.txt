@@ -9,8 +9,6 @@ GUI:
 pyinstaller:
             pyinstaller.exe --onefile interface.py --hiddenimport windnd
 
-PDF_merge:
-        Missing a pdf verifyer "list dont have 'endswith'
 
 Over_All:
         maybe add a fileloop that disable "word" button if a "pdf" file is added to the list

@@ -10,10 +10,6 @@ from docx import Document
 import win32com.client as client
 from docx2pdf import convert
 
-class Error(Exception):
-    pass
-class  PdfReadError(Error):
-    pass
 
 root = Tk()
 root.title("PDF manipulator")
@@ -192,9 +188,14 @@ def pdf_merge():
         pdf_writer.write(pdf_output)
         pdf_output.close()
 
-        wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
-                                            message='Jobs done! \n ' + userfilename  + 'is saved at ' + outFolder +
-                                            '\n' '             Do yout wish to quit?   ')
+        if len(userfilename) == 1:
+            wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                                message='Jobs done! \n ' + userfilename  + 'is saved at ' + outFolder +
+                                                '\n' '             Do yout wish to quit?   ')
+        else:
+            wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                                message='Jobs done! \n No Files where saved!'
+                                                '\n' '             Do yout wish to quit?   ')            
 
         if wish_quit_mes == True or wish_quit_mes == None:
             root.quit()
@@ -305,9 +306,14 @@ def pdf_splitter_many():
             messagebox.showerror('An error has occured', 'Range has exceeded number of pages in the input. \nFile will still be saved')
                     
     fileCount = str(len(range_list))
-    wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
-                                            message='Jobs done! \n ' +  fileCount + ' files are saved at ' + outFolder +
-                                            '\n' '            Do you wish to quit?    ')
+    if fileCount >= 1:
+        wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                                message='Jobs done! \n ' +  fileCount + ' files are saved at ' + outFolder +
+                                                '\n' '            Do you wish to quit?    ')
+    else:
+        wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                                message='Jobs done! \n No Files where saved!'
+                                                '\n' '            Do you wish to quit?    ')
 
     if wish_quit_mes == True or wish_quit_mes == None:
         root.quit()
@@ -393,9 +399,14 @@ def pdf_splitter_one():
         output_file.close()
         numInput= True  
 
-    wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
-                                            message='Jobs done! \n ' +  userfilename + ' files are saved at ' + outFolder +
-                                            '\n' '            Do you wish to quit?    ')
+    if len(userfilename) == 1:
+        wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                                message='Jobs done! \n ' +  userfilename + ' is saved at ' + outFolder +
+                                                '\n' '            Do you wish to quit?    ')
+    else:
+        wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                                message='Jobs done! \n No Files where saved!'
+                                                '\n' '            Do you wish to quit?    ')
 
     if wish_quit_mes == True or wish_quit_mes == None:
         root.quit()
@@ -433,6 +444,8 @@ def pdf_to_word():
 
             for doc in pdf2convert:
                 filename = doc.split('\\')[-1]
+                #print(filename)
+                filename = filename.replace('/', '\\')
                 wb = word.Documents.Open(filename)
                 out_file = os.path.abspath(filename[0:-4] + ".docx".format(doc))
                 outfile = out_file.replace('/','\\')
@@ -443,14 +456,26 @@ def pdf_to_word():
             word.Quit()
             button = False
             listsize = len(pdf2convert)
-        wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
-                                            message='Jobs done! \n ' +  str(listsize) + ' files are saved at ' + reqs_path +
-                                            '\n' '            Do you wish to quit?    ')
 
-    if wish_quit_mes == True or wish_quit_mes == None:
-        root.quit()
-    else:
-        pass
+        if listsize == 1:
+            wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                                message='Jobs done! \n ' +  str(listsize) + ' files are saved at ' + reqs_path +
+                                                '\n' '            Do you wish to quit?    ')
+
+        elif listsize >= 1:
+            wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                                message='Jobs done! \n ' +  str(listsize) + ' files are saved at ' + reqs_path +
+                                                '\n' '            Do you wish to quit?    ')
+
+        elif listsize < 1:
+            wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                                message='Jobs done! \n No files where saved'
+                                                '\n' '            Do you wish to quit?    ')
+
+        if wish_quit_mes == True or wish_quit_mes == None:
+            root.quit()
+        else:
+            pass
 
     lb.delete(0, "end")
     data.clear()
@@ -492,6 +517,10 @@ def word_to_pdf():
                 wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
                                                     message='Jobs done! \n ' +  str(listsize) + ' files are saved at ' + reqs_path +
                                                     '\n' '            Do you wish to quit?    ')
+            else: 
+                wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
+                                                    message='Jobs done! \n No files where saved!'
+                                                    '\n' '            Do you wish to quit?    ')              
 
     if wish_quit_mes == True or wish_quit_mes == None:
         root.quit()
