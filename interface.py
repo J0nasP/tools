@@ -8,10 +8,12 @@ import time, glob
 import os, re
 from docx import Document
 import win32com.client as client
-from pdf2docx import parse
 from docx2pdf import convert
 
-
+class Error(Exception):
+    pass
+class  PdfReadError(Error):
+    pass
 
 root = Tk()
 root.title("PDF manipulator")
@@ -28,18 +30,22 @@ Label(root, text="PDF Manipulator", font=("Berlin Sans FB Demi", 16, "bold")).\
 
 Button(root, text= "Add a File", command=lambda: add_file()).grid(row=2, column=0)
 Button(root, text= "Remove File", command=lambda: remove_file()).grid(row=3, column=0)
-Button(root, text= "Merge PDF Files", command=lambda:pdf_merger()).grid(row=8, column=0)
+Button(root, text= "Merge PDF Files",command=lambda: pdf_merge()).grid(row=8, column=0)
 Button(root, text= "Quit", command=lambda: want_to_quit()).grid(row=8, column=2)
 Button(root, text= "Split PDF Files", command=lambda: pdf_selector()).grid(row=8, column=1)
 Button(root, text= "PDF to Word", command=lambda: pdf_to_word()).grid(row=7, column=0)
-Button(root, text= "Word to PDF", command=lambda:word_to_pdf()).grid(row=7, column=1)
+Button(root, text= "Word to PDF", command=lambda: word_to_pdf()).grid(row=7, column=1)
 
 
-Label(root, text="File: ").grid(row= 2, column= 3)
-Label(root, textvariable=filename, width=25).grid(row=2, column= 4, columnspan=1)
+Label(root, text="File: ", width=3).grid(row= 2, column= 3, sticky=('W'))
+Label(root, textvariable=filename, width=25).grid(row=2, column= 4, columnspan=1, sticky=('W'))
 
-Label(root, text= "Pages: ").grid(row=3, column= 3)
+Label(root, text= "Pages: ").grid(row=3, column= 3, sticky=('N, S, E, W'))
 Label(root, textvariable=pages).grid(row=3, column= 4)
+
+root.columnconfigure(4, weight=1)
+
+
 
 lb = Listbox(root, selectmode= "extended", height=15, width=35)
 lb.grid(row=1, column=2, rowspan=7, sticky= ('N', 'S', 'E', 'W'))
@@ -49,7 +55,9 @@ lb.grid(row=1, column=2, rowspan=7, sticky= ('N', 'S', 'E', 'W'))
 lb.insert("end")
 dataLocations = []
 data = []
-lb.delete(0, "end") 
+lb.delete(0, "end")
+
+
 
 def insert():
     lb.delete(0, len(data))
@@ -100,7 +108,7 @@ lb.bind('<Button-1>', select)
 def add_file(file = None):
     global data
     global dataLocations
-    if not file: d = [filedialog.askopenfilename(filetypes=(('PDF','*.pdf'),('Word files','.docx')))]
+    if not file: d = [filedialog.askopenfilename(title='Which file do you want to add?')]
     else: d = file
     hasErrored = False
     for i in d:
@@ -130,15 +138,19 @@ for child in root.winfo_children():
 def updatePages(pages: StringVar, filename: StringVar):
 
     while True:
-        if data:
-            filename.set(data[current][:-1])
-            if filename.get().endswith('.pdf'):
+        try:
+            if data:
+                filename.set(data[current][::])
                 pages.set(PdfFileReader(dataLocations[current]).getNumPages())
-        time.sleep(0.1)
+            time.sleep(0.1)
+        except:
+            pass
 
-        
-def pdf_merger():
+
+     
+def pdf_merge():
     """Merges PDF files and saves them as one file """
+
     if len(data) < 1:
         button = False
         messagebox.showerror('An error occured','No file where selected \n Please add the files you want to merge')
@@ -152,7 +164,7 @@ def pdf_merger():
         userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
         if len(userfilename) < 1:
             messagebox.showerror('An error has oucurred','You forgot to name the file')
-            pdf_merger()
+            pdf_merge()
          
         try:
             outFolder = filedialog.askdirectory(title='Where do you want to save the file', initialdir='/')  
@@ -160,8 +172,7 @@ def pdf_merger():
         except FileNotFoundError: 
             messagebox.showerror('An error has ocurred!', "The Choosen folder dosn't exsist")
             continue
-        else:
-            break
+        
 
         pdf2merge = []
 
@@ -403,10 +414,10 @@ def pdf_to_word():
         messagebox.showerror('An error occured','No file where selected \n  Please add the files you want to convert')    
     else:
         button = True
+        messagebox.showwarning('Warning!', 'Rigth now, it is not possible to add a file with spaces \n  We are working on it, so hopefully, it will be fixed soon!') 
 
         while button == True:
             word = client.gencache.EnsureDispatch("Word.Application")
-
 
             pdfs_path = dataLocations
             reqs_path = filedialog.askdirectory(title='Where do you want to save the files?',
@@ -455,7 +466,6 @@ def word_to_pdf():
         button = True
 
         while button == True:
-
 
             input_folder = dataLocations
 
