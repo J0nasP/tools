@@ -444,11 +444,9 @@ def pdf_to_word():
 
             for doc in pdf2convert:
                 filename = doc.split('\\')[-1]
-                #print(filename)
                 filename = filename.replace('/', '\\')
                 wb = word.Documents.Open(filename)
-                out_file = os.path.abspath(filename[0:-4] + ".docx".format(doc))
-                outfile = out_file.replace('/','\\')
+                outfile = os.path.abspath(filename[0:-4] + ".docx".format(doc))
                 print(outfile)
                 wb.SaveAs(outfile, FileFormat=16) # file format for docx
                 wb.Close()
@@ -459,10 +457,10 @@ def pdf_to_word():
 
         if listsize == 1:
             wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
-                                                message='Jobs done! \n ' +  str(listsize) + ' files are saved at ' + reqs_path +
+                                                message='Jobs done! \n ' +  str(listsize) + ' file is saved at ' + reqs_path +
                                                 '\n' '            Do you wish to quit?    ')
 
-        elif listsize >= 1:
+        elif listsize > 1:
             wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
                                                 message='Jobs done! \n ' +  str(listsize) + ' files are saved at ' + reqs_path +
                                                 '\n' '            Do you wish to quit?    ')

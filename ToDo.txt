@@ -2,6 +2,7 @@ pdf2 word:
     If you add a pdf with a space in, it adds "\\/" after "C:"
     "(C:\\//Users/peter/Desktop/Hen%20ning.pdf)"
     pretty weird, need fixing! 
+    the problem is fixed but now it saves at one level lower
 
 GUI:
     "filedisplay" is djanky to far in the rigth side
