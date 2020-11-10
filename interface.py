@@ -441,12 +441,11 @@ def pdf_to_word():
                     pdf2convert.append(filename)
             
 
-
             for doc in pdf2convert:
-                filename = doc.split('\\')[-1]
                 filename = filename.replace('/', '\\')
                 wb = word.Documents.Open(filename)
-                outfile = os.path.abspath(filename[0:-4] + ".docx".format(doc))
+                filename = doc.split('/')[-1]
+                outfile = os.path.abspath(reqs_path + '\\' + filename[0:-4] + ".docx")
                 print(outfile)
                 wb.SaveAs(outfile, FileFormat=16) # file format for docx
                 wb.Close()
