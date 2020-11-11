@@ -3,12 +3,13 @@ pdf2 word:
     "(C:\\//Users/peter/Desktop/Hen%20ning.pdf)"
     pretty weird, need fixing! 
     the problem is fixed but now it saves at one level lower
+    everything fixed
 
 GUI:
     "filedisplay" is djanky to far in the rigth side
 
 pyinstaller:
-            pyinstaller.exe --onefile interface.py --hiddenimport windnd
+            pyinstaller.exe --onefile interface.py --icon=tool.ico --hiddenimport windnd --name Toolbox
 
 
 Over_All:

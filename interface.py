@@ -104,20 +104,24 @@ lb.bind('<Button-1>', select)
 def add_file(file = None):
     global data
     global dataLocations
-    if not file: d = [filedialog.askopenfilename(title='Which file do you want to add?')]
-    else: d = file
-    hasErrored = False
-    for i in d:
-        splitdata = i.split("/")[-1].split("\\")[-1]
-        if splitdata.endswith(".pdf" or "PDF") or splitdata.endswith(".docx" or "DOCX"):
-            print(i)
-            if i in data:
-                i = findAmount(d)
-            data += [splitdata]
-            dataLocations += [i]
-        elif not hasErrored:
-            messagebox.showerror("You can only use pdf docx files", "Wrong file type! you can only use PDF or docx files")
-            hasErrored = True
+    try:
+        if not file: d = [filedialog.askopenfilename(title='Which file do you want to add?')]
+        else: d = file
+        hasErrored = False
+        for i in d:
+            splitdata = i.split("/")[-1].split("\\")[-1]
+            if hasErrored == False:
+                print(i)
+                if i in data:
+                    i = findAmount(d)
+                data += [splitdata]
+                dataLocations += [i]
+            elif not hasErrored:
+                messagebox.showerror("You can only use pdf docx files", "Wrong file type! you can only use PDF or docx files")
+                hasErrored = True
+    except TypeError:
+        pass
+
     insert()
 
 def remove_file():
@@ -125,6 +129,7 @@ def remove_file():
     data.pop(index)
     dataLocations.pop(index)
     lb.delete("anchor")
+
 
 windnd.hook_dropfiles(root, add_file, force_unicode=True)
 
