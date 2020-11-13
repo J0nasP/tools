@@ -193,7 +193,7 @@ def pdf_merge():
         pdf_writer.write(pdf_output)
         pdf_output.close()
 
-        if len(userfilename) == 1:
+        if not userfilename == None:
             wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
                                                 message='Jobs done! \n ' + userfilename  + 'is saved at ' + outFolder +
                                                 '\n' '             Do yout wish to quit?   ')
@@ -205,12 +205,13 @@ def pdf_merge():
         if wish_quit_mes == True or wish_quit_mes == None:
             root.quit()
         else: 
-            pass
+            button ==  False
 
 
         lb.delete(0, "end")
         data.clear()
         dataLocations.clear()
+        return
 
 def want_to_quit():
     """ Quit button function that makes sure if they want to close the app or continue """
@@ -404,7 +405,7 @@ def pdf_splitter_one():
         output_file.close()
         numInput= True  
 
-    if len(userfilename) == 1:
+    if len(userfilename) >= 1:
         wish_quit_mes = messagebox.askyesno(title='Do you wish to quit?',
                                                 message='Jobs done! \n ' +  userfilename + ' is saved at ' + outFolder +
                                                 '\n' '            Do you wish to quit?    ')
@@ -430,7 +431,6 @@ def pdf_to_word():
         messagebox.showerror('An error occured','No file where selected \n  Please add the files you want to convert')    
     else:
         button = True
-        messagebox.showwarning('Warning!', 'Rigth now, it is not possible to add a file with spaces \n  We are working on it, so hopefully, it will be fixed soon!') 
 
         while button == True:
             word = client.gencache.EnsureDispatch("Word.Application")

@@ -1,18 +1,19 @@
-pdf2 word:
-    If you add a pdf with a space in, it adds "\\/" after "C:"
-    "(C:\\//Users/peter/Desktop/Hen%20ning.pdf)"
-    pretty weird, need fixing! 
-    the problem is fixed but now it saves at one level lower
-    everything fixed
 
 GUI:
     "filedisplay" is djanky to far in the rigth side
 
 pyinstaller:
-            pyinstaller.exe --onefile interface.py --icon=tool.ico --hiddenimport windnd --name Toolbox
+            pyinstaller.exe --onefile interface.py --icon=toolbox.ico --noconsole --hiddenimport windnd --name Toolbox
 
 
 Over_All:
-        maybe add a fileloop that disable "word" button if a "pdf" file is added to the list
-        and disable "pdf" button if a "docx" file is added
+        when done dosn't show how many files where saved(Should work now)
+
+Merger:
+        possible when more files than to are added to select between the the files which you want to Merge
+        stays in a loop never stops
+
+Splitter:
+        Add two buttons instead of writing what you want, it is just by click off a button
+        dosn't detect 22 as 22 but 2,2
 
