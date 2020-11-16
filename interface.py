@@ -282,10 +282,13 @@ def pdf_splitter_many():
     """Split a Pdf file and saves it as each page as a file"""
 
     userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
+    validName = (re.findall('[<>\\\\:"/|?*]', userfilename))
     if len(userfilename) < 1:
         messagebox.showerror('An error has oucurred','You forgot to name the file')
         pdf_splitter_many()
-      
+    elif len(validName) > 0:
+        messagebox.showerror('An error has ocurred', 'The filename can not contain: \n            < > \ : " / | ? *')
+        pdf_splitter_many()
     try:
         outFolder = filedialog.askdirectory(title='Where do you want to save the file?', initialdir='/')  
     except FileNotFoundError: 
@@ -368,9 +371,14 @@ def pdf_splitter_many():
 def pdf_splitter_one():
     """Split a Pdf file and saves it as one file containing the selected files"""
     userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
+    validName = (re.findall('[<>\\\\:"/|?*]', userfilename))
+
     if len(userfilename) < 1:
         messagebox.showerror('An error has oucurred','You forgot to name the file')
-        pdf_splitter_many()
+        pdf_splitter_one()
+    elif len(validName) > 0:
+        messagebox.showerror('An error has ocurred', 'The filename can not contain: \n            < > \ : " / | ? *')
+        pdf_splitter_one()
       
     try:
         outFolder = filedialog.askdirectory(title='Where do you want to save the file?', initialdir='/')  
