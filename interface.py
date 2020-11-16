@@ -176,7 +176,6 @@ def updatePages(pages: StringVar, filename: StringVar):
 def pdf_merge():
     """Merges PDF files and saves them as one file """
 
-    print(chosData)
     if len(data) < 1:
         button = False
         messagebox.showerror('An error occured','No file where selected \n Please add the files you want to merge')
