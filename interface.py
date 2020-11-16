@@ -71,10 +71,12 @@ lb.grid(row=1, column=2, rowspan=7, sticky= ('N', 'S', 'E', 'W'))
 
 
 
+
 lb.insert("end")
 dataLocations = []
 data = []
 lb.delete(0, "end")
+
 
 
 
@@ -122,7 +124,7 @@ def move(event):
     except Exception as e: print(e)
 
 lb.bind('<B1-Motion>', move)
-lb.bind('<Button-1>', select)
+lb.bind('<ButtonRelease-1>', select)
 
 def add_file(file = None):
     global data
@@ -174,6 +176,7 @@ def updatePages(pages: StringVar, filename: StringVar):
 def pdf_merge():
     """Merges PDF files and saves them as one file """
 
+    print(chosData)
     if len(data) < 1:
         button = False
         messagebox.showerror('An error occured','No file where selected \n Please add the files you want to merge')
@@ -185,9 +188,13 @@ def pdf_merge():
     
     while button == True:
         userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
+        validName = (re.findall('[<>\\\\:"/|?*]', userfilename))
+
         if len(userfilename) < 1:
             messagebox.showerror('An error has oucurred','You forgot to name the file')
             pdf_merge()
+        elif len(validName) > 0:
+            messagebox.showerror('An error has ocurred', 'The filename can not contain: \n            < > \ : " / | ? *')
          
         try:
             outFolder = filedialog.askdirectory(title='Where do you want to save the file', initialdir='/')  

@@ -16,5 +16,5 @@ Merger:
 Splitter:
         Add two buttons instead of writing what you want, it is just by click off a button
         dosn't detect 22 as 22 but 2,2
-        inps = (re.findall("[0-9]-[0-9]|[0-9]", inp)) the mistake is here
+
         should work now
