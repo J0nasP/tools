@@ -11,6 +11,29 @@ import win32com.client as client
 from docx2pdf import convert
 
 
+class Messagebox(object):
+
+    root = None
+
+    def __init__(self):
+        self.top = tk.Toplevel(Messagebox.root)
+
+        frame = tk.Frame(self.top, borderwidth=0, relief='ridge')
+        frame.pack(fill='both', expand= True)
+
+        label = tk.Label(frame, text='Do you want "One file" or "Many files" \n The many files option gives you the files i the format: "file page x.pdf"')
+        label.pack(padx= 40, pady=15)
+
+        one_but = tk.Button(frame, text='One file', command= lambda: pdf_splitter_one())
+        one_but.pack( expand= True, side= 'left')
+
+        many_but = tk.Button(frame, text='Many Files', command= lambda: pdf_splitter_many())
+        many_but.pack(expand = True, side='right')
+
+        self.top.resizable(False, False)
+
+        
+
 root = Tk()
 root.title("PDF manipulator")
 root.geometry('650x400')
@@ -28,7 +51,7 @@ Button(root, text= "Add a File", command=lambda: add_file()).grid(row=2, column=
 Button(root, text= "Remove File", command=lambda: remove_file()).grid(row=3, column=0)
 Button(root, text= "Merge PDF Files",command=lambda: pdf_merge()).grid(row=8, column=0)
 Button(root, text= "Quit", command=lambda: want_to_quit()).grid(row=8, column=2)
-Button(root, text= "Split PDF Files", command=lambda: pdf_selector()).grid(row=8, column=1)
+Button(root, text= "Split PDF Files", command=lambda: new_pdf_selector()).grid(row=8, column=1)
 Button(root, text= "PDF to Word", command=lambda: pdf_to_word()).grid(row=7, column=0)
 Button(root, text= "Word to PDF", command=lambda: word_to_pdf()).grid(row=7, column=1)
 
@@ -65,7 +88,7 @@ def findAmount(od, d="", c=1):
     return d if not d in data else findAmount(od, d, c+1)
 
 def selector(ind):
-    data[ind] = data[ind].split(" <")[0]
+    data[ind] = data[ind].split(" <")[-1]
     data[current] += " <"
 
 insert()
@@ -147,7 +170,6 @@ def updatePages(pages: StringVar, filename: StringVar):
         except:
             pass
 
-
      
 def pdf_merge():
     """Merges PDF files and saves them as one file """
@@ -217,7 +239,7 @@ def want_to_quit():
     """ Quit button function that makes sure if they want to close the app or continue """
     want_quit = messagebox.askyesno(title='Are you sure?', message='Are you sure you want to quit??')
     if want_quit == True:
-        root.quit()
+        root.destroy()
     else:
         pass
 
@@ -244,6 +266,17 @@ def pdf_selector():
         else:
             messagebox.showerror('An error occured!', 'Sorry wrong input! Please type MANY or ONE in the text field!')
 
+def new_pdf_selector():
+    if len(data)  == 0:
+        button = False
+        messagebox.showerror('An error occured',' No file where selected \n Please add the files you want to split')
+    else:
+        button = True
+    
+    if len(data) > 1:
+        button = False
+    if button == True:    
+        Messagebox()
 
 def pdf_splitter_many():
     """Split a Pdf file and saves it as each page as a file"""
@@ -277,7 +310,7 @@ def pdf_splitter_many():
                                             'which pages do you want? ex. 1-3 or 1,5,7 ({} total pages)'.format(pageCount))
             
         inp = page_range
-        inps = (re.findall("[0-9]-[0-9]|[0-9]", inp))
+        inps = (re.findall("[0-9]+-[0-9]+|[0-9]+", inp))
         output = [list(range(int(i[0]), int(i[1]) + 1)) for i in [i.split("-") if "-" in i else [i, i] for i in inps]]
         rangeList = [x for i in output for x in i]
         page_ranges = (x.split("-") for x in page_range.split(","))
@@ -387,7 +420,8 @@ def pdf_splitter_one():
         input_pdf = PdfFileReader(open(filename, 'rb'))
         output_file = open(userfilename + '.pdf', "wb")
         inp = page_range
-        inps = (re.findall("[0-9]-[0-9]|[0-9]", inp))
+        inps = (re.findall("[0-9]+-[0-9]+|[0-9]+", inp))
+        print(inps)
         output = [i for x in [list(range(int(i[0]), int(i[1]) + 1)) for i in [i.split("-") if "-" in i else [i, i] for i in inps]] for i in x]
 
 
