@@ -293,6 +293,9 @@ def pdf_splitter_many():
     elif len(validName) > 0:
         messagebox.showerror('An error has ocurred', 'The filename can not contain: \n            < > \ : " / | ? *')
         pdf_splitter_many()
+        
+    userfilename.strip() # removes leading and trailing whitespaces
+
     try:
         outFolder = filedialog.askdirectory(title='Where do you want to save the file?', initialdir='/')  
     except FileNotFoundError: 
@@ -345,7 +348,7 @@ def pdf_splitter_many():
             for page in range_list:
                 outputWriter = PdfFileWriter()
                 outputWriter.addPage(inputPdf.getPage(page - 1))
-                outFile = os.path.join(outFolder, '{} page {}.pdf'.format(userfilename, page))
+                outFile = os.path.join(outFolder, '{} page {}.pdf'.format(userfilename.strip(), page))
                 with open(outFile, 'wb') as out:
                     outputWriter.write(out)
         except IndexError:
@@ -376,6 +379,7 @@ def pdf_splitter_one():
     """Split a Pdf file and saves it as one file containing the selected files"""
     userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
     validName = (re.findall('[<>\\\\:"/|?*]', userfilename))
+    userfilename.strip() # removes leading and trailing whitespaces
 
     if len(userfilename) < 1:
         messagebox.showerror('An error has oucurred','You forgot to name the file')
