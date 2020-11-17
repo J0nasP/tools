@@ -21,7 +21,7 @@ class Messagebox(object):
         frame = tk.Frame(self.top, borderwidth=0, relief='ridge')
         frame.pack(fill='both', expand= True)
 
-        label = tk.Label(frame, text='Do you want "One file" or "Many files" \n The many files option gives you the files i the format: "file page x.pdf"')
+        label = tk.Label(frame, text='Do you want "One file" or "Many files" \n The many files option gives you the files in the format: "name page x.pdf"')
         label.pack(padx= 40, pady=15)
 
         one_but = tk.Button(frame, text='One file', command= lambda: pdf_splitter_one())
@@ -246,33 +246,14 @@ def want_to_quit():
     else:
         pass
 
-def pdf_selector():
-    """Function where the user selects if they want one pdf file or many pdf files  """
-    if len(data)  == 0:
-        button = False
-        messagebox.showerror('An error occured',' No file where selected \n Please add the files you want to split')
-    else:
-        button = True
-    
-    if len(data) > 1:
-        button = False
-        messagebox.showerror('An error occured!', 'Sorry you can only split one file at the time \n       We are working on it!:)')
-    if len(data) == 1:
-        choise = simpledialog.askstring(title="Do you want one or many files?", 
-        prompt="Do you want to save the splitted file in one file or one file for each page? \n" 
-                                                "                                     Enter either ONE or MANY")
-
-        if choise.lower() == "ONE".lower():
-            pdf_splitter_one()
-        elif choise.lower() == "MANY".lower():
-            pdf_splitter_many()
-        else:
-            messagebox.showerror('An error occured!', 'Sorry wrong input! Please type MANY or ONE in the text field!')
 
 def new_pdf_selector():
     if len(data)  == 0:
         button = False
         messagebox.showerror('An error occured',' No file where selected \n Please add the files you want to split')
+    elif not data.endswith('.pdf') in dataLocations:
+        button = False
+        messagebox.showerror('An error occured','No file where selected \n  Wrong file type, please add only .pdf files')  
     else:
         button = True
     
@@ -285,10 +266,10 @@ def pdf_splitter_many():
     """Split a Pdf file and saves it as each page as a file"""
 
     
-    userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
+    userfilename = simpledialog.askstring('Name the new files', 'What do you want to call the new file? \n the files is gonna be in the format: "name page x.pd')
     validName = (re.findall('[<>\\\\:"/|?*]', userfilename))
     if len(userfilename) < 1:
-        messagebox.showerror('An error has oucurred','You forgot to name the file')
+        messagebox.showerror('An error has oucurred','You forgot to name the files')
         pdf_splitter_many()
     elif len(validName) > 0:
         messagebox.showerror('An error has ocurred', 'The filename can not contain: \n            < > \ : " / | ? *')
@@ -377,9 +358,11 @@ def pdf_splitter_many():
 
 def pdf_splitter_one():
     """Split a Pdf file and saves it as one file containing the selected files"""
+
     userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
     validName = (re.findall('[<>\\\\:"/|?*]', userfilename))
     userfilename.strip() # removes leading and trailing whitespaces
+
 
     if len(userfilename) < 1:
         messagebox.showerror('An error has oucurred','You forgot to name the file')
@@ -478,7 +461,10 @@ def pdf_splitter_one():
 def pdf_to_word():
     if len(data) < 1:
         button = False
-        messagebox.showerror('An error occured','No file where selected \n  Please add the files you want to convert')    
+        messagebox.showerror('An error occured','No file where selected \n  Please add the files you want to convert')
+    elif not data.endswith('.pdf') in dataLocations:
+        button = False
+        messagebox.showerror('An error occured','No file where selected \n  Wrong file type, please add only .pdf files')  
     else:
         button = True
 
@@ -538,7 +524,10 @@ def pdf_to_word():
 def word_to_pdf():
     if len(data) < 1:
         button = False
-        messagebox.showerror('An error occured','No file where selected \n  Please add the files you want to convert')    
+        messagebox.showerror('An error occured','No file where selected \n  Please add the files you want to convert')
+    elif not data.endswith('.docx') in dataLocations:
+        button = False
+        messagebox.showerror('An error occured','No file where selected \n  Wrong file type, please add only docx files')
     else:
         button = True
 
