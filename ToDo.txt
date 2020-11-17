@@ -3,7 +3,7 @@ GUI:
     "filedisplay" is djanky to far in the rigth side
 
 pyinstaller:
-            pyinstaller.exe --onedir interface.py --icon=toolbox.ico --noconsole --hiddenimport windnd --name Toolbox
+            pyinstaller.exe --onefile interface.py --icon=toolbox.ico --noconsole --hiddenimport windnd --name Toolbox
 
 
 Over_All:
@@ -15,5 +15,4 @@ Merger:
 
 Splitter:
         Add two buttons instead of writing what you want, it is just by click off a button fixed
-        dosn't detect 22 as 22 but 2,2
         should work now

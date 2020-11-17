@@ -66,7 +66,7 @@ root.columnconfigure(4, weight=1)
 
 
 
-lb = Listbox(root, selectmode= "extended", height=15, width=35)
+lb = Listbox(root, selectmode= "extended", height=15, width=35, activestyle= 'underline')
 lb.grid(row=1, column=2, rowspan=7, sticky= ('N', 'S', 'E', 'W'))
 
 
@@ -89,9 +89,7 @@ def findAmount(od, d="", c=1):
     d = od+" [{}]".format(str(c))
     return d if not d in data else findAmount(od, d, c+1)
 
-def selector(ind):
-    data[ind] = data[ind].split(" <")[-1]
-    data[current] += " <"
+
 
 insert()
 current = 0
@@ -100,7 +98,6 @@ def select(event):
     global current
     last = current
     current = lb.nearest(event.y)
-    selector(last)
     print("Current changed to", current)
 
 def move(event):
