@@ -14,7 +14,6 @@ Merger:
         stays in a loop never stops
 
 Splitter:
-        Add two buttons instead of writing what you want, it is just by click off a button
+        Add two buttons instead of writing what you want, it is just by click off a button fixed
         dosn't detect 22 as 22 but 2,2
-
         should work now
