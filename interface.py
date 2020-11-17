@@ -66,7 +66,7 @@ root.columnconfigure(4, weight=1)
 
 
 
-lb = Listbox(root, selectmode= "extended", height=15, width=35, activestyle= 'underline')
+lb = Listbox(root, selectmode= "multiple", height=15, width=35, activestyle= 'underline')
 lb.grid(row=1, column=2, rowspan=7, sticky= ('N', 'S', 'E', 'W'))
 
 
@@ -76,7 +76,7 @@ lb.insert("end")
 dataLocations = []
 data = []
 lb.delete(0, "end")
-
+lb
 
 
 
@@ -284,6 +284,7 @@ def new_pdf_selector():
 def pdf_splitter_many():
     """Split a Pdf file and saves it as each page as a file"""
 
+    
     userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
     validName = (re.findall('[<>\\\\:"/|?*]', userfilename))
     if len(userfilename) < 1:
