@@ -9,6 +9,8 @@ pyinstaller:
 Over_All:
         when done dosn't show how many files where saved(Should work now)
 
+PDF:
+        adds empy file needs fixing
 Merger:
         possible when more files than two are added to select between the the files which you want to Merge
         stays in a loop never stops, final messagebox a bit djanky 
@@ -20,4 +22,4 @@ Splitter:
 CC compiler:
         cd C:\Users\peter\Desktop\tools
         set CC=C:\\MinGW64\\mingw64\\bin\\gcc.exe 
-        python -m nuitka --mingw64 interface.py --exe --plugin-enable=tk-inter --prefer-source-code --plugin-enable=pylint-warnings
+        python -m nuitka --mingw64 interface.py --exe --standalone --plugin-enable=tk-inter --prefer-source-code --plugin-enable=pylint-warnings --windows-disable-console
