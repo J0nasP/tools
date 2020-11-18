@@ -11,8 +11,13 @@ Over_All:
 
 Merger:
         possible when more files than two are added to select between the the files which you want to Merge
-        stays in a loop never stops
+        stays in a loop never stops, final messagebox a bit djanky 
 
 Splitter:
         Add two buttons instead of writing what you want, it is just by click off a button fixed
         should work now
+
+CC compiler:
+        cd C:\Users\peter\Desktop\tools
+        set CC=C:\\MinGW64\\mingw64\\bin\\gcc.exe 
+        python -m nuitka --mingw64 interface.py --exe --plugin-enable=tk-inter --prefer-source-code --plugin-enable=pylint-warnings

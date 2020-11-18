@@ -30,7 +30,9 @@ class Messagebox(object):
         many_but = tk.Button(frame, text='Many Files', command= lambda: pdf_splitter_many())
         many_but.pack(expand = True, side='right')
 
+
         self.top.resizable(False, False)
+
 
         
 
@@ -66,7 +68,7 @@ root.columnconfigure(4, weight=1)
 
 
 
-lb = Listbox(root, selectmode= "multiple", height=15, width=35, activestyle= 'underline')
+lb = Listbox(root, selectmode= "EXTENDED", height=15, width=35, activestyle= 'underline')
 lb.grid(row=1, column=2, rowspan=7, sticky= ('N', 'S', 'E', 'W'))
 
 
@@ -88,8 +90,6 @@ def insert():
 def findAmount(od, d="", c=1):
     d = od+" [{}]".format(str(c))
     return d if not d in data else findAmount(od, d, c+1)
-
-
 
 insert()
 current = 0
@@ -152,6 +152,41 @@ def remove_file():
     dataLocations.pop(index)
     lb.delete("anchor")
 
+def new_pdf_selector():
+
+    check_the_end_pdf()
+    button = False
+
+    if len(data)  == 0:
+        button = False
+        messagebox.showerror('An error occured',' No file where selected \n Please add the files you want to split')
+
+    if len(data) >= 1:
+        button = True
+
+    if button == True:    
+        Messagebox()
+
+def check_the_end_pdf():
+
+    for filenames in data:
+        if not filenames.endswith('.pdf'):
+            button = False
+            messagebox.showerror('An error occured','Wrong file type, please add only .pdf files')
+            return False
+        else:
+            return True
+
+def check_the_end_docx():
+    for filenames in data:
+        if not filenames.endswith('.docx'):
+            button = False
+            messagebox.showerror('An error occured','Wrong file type, please add only .docx files')
+            return False
+        else:
+            return True
+
+
 
 windnd.hook_dropfiles(root, add_file, force_unicode=True)
 
@@ -172,6 +207,9 @@ def updatePages(pages: StringVar, filename: StringVar):
      
 def pdf_merge():
     """Merges PDF files and saves them as one file """
+
+    if check_the_end_pdf() is False:
+        return
 
     if len(data) < 1:
         button = False
@@ -247,25 +285,12 @@ def want_to_quit():
         pass
 
 
-def new_pdf_selector():
-    if len(data)  == 0:
-        button = False
-        messagebox.showerror('An error occured',' No file where selected \n Please add the files you want to split')
-    elif not data.endswith('.pdf') in dataLocations:
-        button = False
-        messagebox.showerror('An error occured','No file where selected \n  Wrong file type, please add only .pdf files')  
-    else:
-        button = True
-    
-    if len(data) > 1:
-        button = False
-    if button == True:    
-        Messagebox()
-
 def pdf_splitter_many():
     """Split a Pdf file and saves it as each page as a file"""
 
-    
+    if check_the_end_pdf() == False:
+        return
+
     userfilename = simpledialog.askstring('Name the new files', 'What do you want to call the new file? \n the files is gonna be in the format: "name page x.pd')
     validName = (re.findall('[<>\\\\:"/|?*]', userfilename))
     if len(userfilename) < 1:
@@ -358,7 +383,8 @@ def pdf_splitter_many():
 
 def pdf_splitter_one():
     """Split a Pdf file and saves it as one file containing the selected files"""
-
+    if check_the_end_pdf() == False:
+        return
     userfilename = simpledialog.askstring('Name the new file', 'What do you want to call the new file?')
     validName = (re.findall('[<>\\\\:"/|?*]', userfilename))
     userfilename.strip() # removes leading and trailing whitespaces
@@ -459,12 +485,14 @@ def pdf_splitter_one():
     return
     
 def pdf_to_word():
+
+    if check_the_end_pdf() == False:
+        return
+
     if len(data) < 1:
         button = False
         messagebox.showerror('An error occured','No file where selected \n  Please add the files you want to convert')
-    elif not data.endswith('.pdf') in dataLocations:
-        button = False
-        messagebox.showerror('An error occured','No file where selected \n  Wrong file type, please add only .pdf files')  
+
     else:
         button = True
 
@@ -522,12 +550,13 @@ def pdf_to_word():
     return
 
 def word_to_pdf():
+
+    if check_the_end_docx() == False:
+        return
+
     if len(data) < 1:
         button = False
         messagebox.showerror('An error occured','No file where selected \n  Please add the files you want to convert')
-    elif not data.endswith('.docx') in dataLocations:
-        button = False
-        messagebox.showerror('An error occured','No file where selected \n  Wrong file type, please add only docx files')
     else:
         button = True
 
