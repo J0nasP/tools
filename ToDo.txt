@@ -22,5 +22,6 @@ Splitter:
 CC compiler:
         cd C:\Users\peter\Desktop\tools
         set CC=C:\\MinGW64\\mingw64\\bin\\gcc.exe
-        set env=TLC
+        set :: env=TCL
         python -m nuitka --mingw64 interface.py --exe --standalone --plugin-enable=tk-inter --prefer-source-code --plugin-enable=pylint-warnings --windows-disable-console --windows-dependency-tool=pefile --experimental=use_pefile_recurse
+        

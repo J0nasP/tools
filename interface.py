@@ -1,14 +1,14 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog, simpledialog, Label, Button, Listbox, Tk, StringVar
-import re, windnd
 import PyPDF2
 from PyPDF2 import PdfFileReader, PdfFileWriter
 import threading
 import time, glob
-import os, re
+import os, re, windnd
 from docx import Document
 import win32com.client as client
 from docx2pdf import convert
+from windnd import *
 
 
 class Messagebox(object):
@@ -68,7 +68,7 @@ root.columnconfigure(4, weight=1)
 
 
 
-lb = Listbox(root, selectmode= "EXTENDED", height=15, width=35, activestyle= 'underline')
+lb = Listbox(root, selectmode= "extended", height=15, width=35, activestyle= 'underline')
 lb.grid(row=1, column=2, rowspan=7, sticky= ('N', 'S', 'E', 'W'))
 
 
@@ -78,7 +78,7 @@ lb.insert("end")
 dataLocations = []
 data = []
 lb.delete(0, "end")
-lb
+
 
 
 
@@ -121,7 +121,23 @@ def move(event):
     except Exception as e: print(e)
 
 lb.bind('<B1-Motion>', move)
-lb.bind('<ButtonRelease-1>', select)
+lb.bind('<Button-1>', select)
+
+
+
+def updatePages(pages: StringVar, filename: StringVar):
+
+    while True:
+        try:
+            if data:
+                filename.set(data[current][::])
+                pages.set(PdfFileReader(dataLocations[current]).getNumPages())
+            time.sleep(0.1)
+        except:
+            pass
+
+for child in root.winfo_children():
+    child.grid(padx=10, pady=10)
 
 def add_file(file = None):
     global data
@@ -145,6 +161,8 @@ def add_file(file = None):
         pass
 
     insert()
+
+
 
 def remove_file():
     index = int(lb.curselection()[0])
@@ -185,25 +203,6 @@ def check_the_end_docx():
             return False
         else:
             return True
-
-
-
-windnd.hook_dropfiles(root, add_file, force_unicode=True)
-
-for child in root.winfo_children():
-    child.grid(padx=10, pady=10)
-
-def updatePages(pages: StringVar, filename: StringVar):
-
-    while True:
-        try:
-            if data:
-                filename.set(data[current][::])
-                pages.set(PdfFileReader(dataLocations[current]).getNumPages())
-            time.sleep(0.1)
-        except:
-            pass
-
      
 def pdf_merge():
     """Merges PDF files and saves them as one file """
@@ -603,8 +602,10 @@ def word_to_pdf():
     button = False
     return
 
+windnd.hook_dropfiles(root, add_file, force_unicode=True)
+
 x = threading.Thread(target=updatePages, args=(pages, filename))
-x.setDaemon(True)
+#x.setDaemon(True)
 x.start()
 
 
