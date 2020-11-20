@@ -6,3 +6,5 @@ ToDo.text
 interface.dist
 interface.build
 python38.dll
+dist
+build

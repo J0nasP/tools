@@ -605,7 +605,7 @@ def word_to_pdf():
 windnd.hook_dropfiles(root, add_file, force_unicode=True)
 
 x = threading.Thread(target=updatePages, args=(pages, filename))
-#x.setDaemon(True)
+x.setDaemon(True)
 x.start()
 
 
