@@ -8,7 +8,7 @@ setup(
                 "py2exe":{
                         "unbuffered": True,
                         "optimize": 2,
-                        "includes": ['lxml.etree', 'lxml._elementpath', 'gzip']
+                        "includes": ['lxml.etree', 'lxml._elementpath', 'gzip', 'docx2pdf']
                 }
         }
 )
