@@ -163,7 +163,6 @@ def add_file(file = None):
     insert()
 
 
-
 def remove_file():
     index = int(lb.curselection()[0])
     data.pop(index)
@@ -282,7 +281,6 @@ def want_to_quit():
         root.destroy()
     else:
         pass
-
 
 def pdf_splitter_many():
     """Split a Pdf file and saves it as each page as a file"""
