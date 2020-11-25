@@ -3,7 +3,7 @@ GUI:
     "filedisplay" is djanky to far in the rigth side
 
 pyinstaller:
-            pyinstaller.exe --onefile interface.py --noconsole --hiddenimport windnd --name Toolbox
+            pyinstaller.exe --onefile Toolbox.py --noconsole --hiddenimport windnd --name Toolbox
 
 
 Over_All:

@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog, simpledialog, Label, Button, Listbox, Tk, StringVar
-import PyPDF2
+import PyPDF2, docx2pdf, docx.api
 from PyPDF2 import PdfFileReader, PdfFileWriter
 import threading
 import time, glob
