@@ -3,7 +3,7 @@ GUI:
     "filedisplay" is djanky to far in the rigth side
 
 pyinstaller:
-            pyinstaller.exe --onefile Toolbox.py --noconsole --hiddenimport windnd --name Toolbox
+            pyinstaller.exe --onedir Toolbox.py --noconsole --hiddenimport windnd --name Toolbox --icon=toolbox.ico
 
 
 Over_All:
@@ -19,9 +19,9 @@ Splitter:
         Add two buttons instead of writing what you want, it is just by click off a button fixed
         should work now
 
-CC compiler:
+CC compiler Nuitka:
         cd C:\Users\peter\Desktop\tools
         set CC=C:\\MinGW64\\mingw64\\bin\\gcc.exe
         set :: env=TCL
-        python -m nuitka --mingw64 interface.py --standalone --plugin-enable=tk-inter --prefer-source-code --plugin-enable=pylint-warnings --windows-disable-console --windows-dependency-tool=pefile --recurse-all
+        python -m nuitka --mingw64 Toolbox.py --standalone --plugin-enable=tk-inter --prefer-source-code --plugin-enable=pylint-warnings --windows-disable-console --windows-dependency-tool=pefile --recurse-all
         

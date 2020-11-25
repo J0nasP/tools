@@ -3,8 +3,8 @@ __pycache__/
 build/
 dist/
 ToDo.text
-interface.dist
-interface.build
+Toolbox.dist
+Toolbox.build
 python38.dll
 dist
 build
